@@ -6,7 +6,7 @@ def apply_rules(sentence, min_char):
     '''
     
     if not other_languages_rule(sentence):
-        return  "REJECT"
+        return  "REJECT@lang@"+sentence
     
     sentence = filler_word_rule(sentence)
     sentence = singlish_filler_word_rule(sentence)
@@ -14,11 +14,12 @@ def apply_rules(sentence, min_char):
     sentence = singlish_lingo_rule(sentence)
     sentence = acronyms_rule(sentence)
     sentence = shortforms_rule(sentence)
+    sentence = miscellaneous_rules(sentence)
     
     if minimum_char_rule(sentence, min_char):
         return sentence
     else:
-        return "REJECT"
+        return "REJECT@char@"+sentence
     
 
 def filler_word_rule(sentence):
@@ -108,6 +109,21 @@ def shortforms_rule(sentence):
     
     pattern = r'~'
     sentence = re.sub(pattern, r'', sentence)
+    return sentence
+
+def miscellaneous_rules(sentence):
+    '''
+    Remainder rules to follow:
+    
+    1. Removal of <UNK> term
+    2. Make multiple whitespaces into one whitespace 
+    '''
+    
+    pattern = r'<UNK>'
+    sentence = re.sub(pattern, r'', sentence)
+    
+    sentence = re.sub(r'\s+', ' ', sentence)
+    
     return sentence
 
 def minimum_char_rule(sentence, minimum_char):
